@@ -1,6 +1,6 @@
 Sample Android application featuring [ODataJClient](https://github.com/MSOpenTech/ODataJClient)
 
-== How to test
+### How to test
 
 1. download [Android SDK](http://developer.android.com/sdk/index.html) and unpack somewhere
 2. `git clone https://github.com/Tirasa/ODataJClientOnAndroidSample.git`
