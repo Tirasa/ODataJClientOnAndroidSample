@@ -13,7 +13,7 @@
     <platform.version>4.1.1.4</platform.version>
     <android.plugin.version>3.6.0</android.plugin.version>
     
-    <android.sdk.path>/opt/adt-bundle-linux-x86_64-20130917/sdk</android.sdk.path>
+    <android.sdk.path>/home/fabio/Applications/adt-bundle-linux-x86_64-20130917/sdk</android.sdk.path>
   </properties>
 
   <dependencies>
@@ -118,6 +118,26 @@
             <platform>18</platform>
           </sdk>
         </configuration>
+      </plugin>
+      
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <jar destfile="target/${artifactId}.apk"
+                     basedir="target/classes"
+                     update="true" includes="META-INF/**"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
