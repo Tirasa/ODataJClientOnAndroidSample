@@ -11,9 +11,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <platform.version>4.1.1.4</platform.version>
-    <android.plugin.version>3.6.0</android.plugin.version>
+    <android.plugin.version>3.7.0</android.plugin.version>
     
-    <android.sdk.path>/home/fabio/Applications/adt-bundle-linux-x86_64-20130917/sdk</android.sdk.path>
+    <android.sdk.path>/opt/adt-bundle-linux-x86_64-20130917/sdk</android.sdk.path>
   </properties>
 
   <dependencies>
@@ -41,6 +41,14 @@
           <groupId>org.codehaus.woodstox</groupId>
           <artifactId>woodstox-core-asl</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-xml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml</groupId>
+          <artifactId>aalto-xml</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     
@@ -50,7 +58,7 @@
       <version>4.2.6</version>
     </dependency>
 
-    <!--    <dependency>
+    <dependency>
       <groupId>edu.usf.cutr.android.xml</groupId>
       <artifactId>jackson-dataformat-xml-android</artifactId>
       <version>2.1.2</version>
@@ -69,7 +77,7 @@
       <groupId>edu.usf.cutr.android.xml</groupId>
       <artifactId>aalto-xml-android</artifactId>
       <version>0.9.8</version>
-    </dependency>-->
+    </dependency>
   </dependencies>
   
   <build>
@@ -109,16 +117,6 @@
           </execution>
         </executions>
       </plugin>
-     
-      <plugin>
-        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-        <artifactId>android-maven-plugin</artifactId>
-        <configuration>
-          <sdk>
-            <platform>18</platform>
-          </sdk>
-        </configuration>
-      </plugin>
       
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -128,7 +126,7 @@
             <phase>package</phase>
             <configuration>
               <target>
-                <jar destfile="target/${artifactId}.apk"
+                <jar destfile="target/${project.artifactId}.apk"
                      basedir="target/classes"
                      update="true" includes="META-INF/**"/>
               </target>
@@ -138,6 +136,16 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+        <configuration>
+          <sdk>
+            <platform>18</platform>
+          </sdk>
+        </configuration>
       </plugin>
     </plugins>
   </build>
