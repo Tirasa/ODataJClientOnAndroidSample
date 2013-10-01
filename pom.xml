@@ -9,11 +9,12 @@
   <name>ODataJClientOnAndroid</name>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <odatajclient.version>0.9.0-SNAPSHOT</odatajclient.version>
     <platform.version>4.1.1.4</platform.version>
     <android.plugin.version>3.7.0</android.plugin.version>
     
     <android.sdk.path>/opt/adt-bundle-linux-x86_64-20130917/sdk</android.sdk.path>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
@@ -26,57 +27,14 @@
     
     <dependency>
       <groupId>com.msopentech.odatajclient</groupId>
-      <artifactId>odatajclient-engine</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.woodstox</groupId>
-          <artifactId>stax2-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.woodstox</groupId>
-          <artifactId>woodstox-core-asl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.dataformat</groupId>
-          <artifactId>jackson-dataformat-xml</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml</groupId>
-          <artifactId>aalto-xml</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>odatajclient-proxy</artifactId>
+      <version>${odatajclient.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.2.6</version>
-    </dependency>
-
-    <dependency>
-      <groupId>edu.usf.cutr.android.xml</groupId>
-      <artifactId>jackson-dataformat-xml-android</artifactId>
-      <version>2.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>edu.usf.cutr.android.xml</groupId>
-      <artifactId>stax2-api-android</artifactId>
-      <version>3.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>edu.usf.cutr.android.xml</groupId>
-      <artifactId>stax-api-android</artifactId>
-      <version>1.0-2</version>
-    </dependency>
-    <dependency>
-      <groupId>edu.usf.cutr.android.xml</groupId>
-      <artifactId>aalto-xml-android</artifactId>
-      <version>0.9.8</version>
     </dependency>
   </dependencies>
   
@@ -89,12 +47,60 @@
           <groupId>com.jayway.maven.plugins.android.generation2</groupId>
           <artifactId>android-maven-plugin</artifactId>
           <version>${android.plugin.version}</version>
+          <configuration>
+            <sdk>
+              <platform>18</platform>
+            </sdk>
+            <sign>
+              <debug>auto</debug>
+            </sign>
+            <undeployBeforeDeploy>true</undeployBeforeDeploy>
+          </configuration>
           <extensions>true</extensions>
         </plugin>
       </plugins>
     </pluginManagement>
     
     <plugins>
+      <plugin>
+        <groupId>com.msopentech.odatajclient</groupId>
+        <artifactId>odatajclient-maven-plugin</artifactId>
+        <version>${odatajclient.version}</version>
+        <executions>
+          <execution>
+            <configuration>
+              <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+              <serviceRootURL>http://services.odata.org/V3/OData/OData.svc</serviceRootURL>
+              <basePackage>net.tirasa.odatajclientandroid.proxy</basePackage>
+            </configuration>
+            <id>pojos</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>pojos</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
       <!-- The android-maven-plugin does not work with Maven 3.1.X -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -114,6 +120,32 @@
               </rules>
               <fail>true</fail>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+        <configuration>
+          <manifest>
+            <debuggable>true</debuggable>
+          </manifest>
+        </configuration>
+        <executions>
+          <execution>
+            <id>manifestUpdate</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>manifest-update</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>alignApk</id>
+            <phase>package</phase>
+            <goals>
+              <goal>zipalign</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -137,24 +169,7 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-        <artifactId>android-maven-plugin</artifactId>
-        <configuration>
-          <sdk>
-            <platform>18</platform>
-          </sdk>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
-  
-  <repositories>
-    <!-- CUTR Android XML libraries Releases -->
-    <repository>
-      <id>cutr-releases</id>
-      <url>https://github.com/CUTR-at-USF/cutr-mvn-repo/raw/master/releases</url>
-    </repository>      
-  </repositories>
+
 </project>
