@@ -8,13 +8,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import com.msopentech.odatajclient.engine.client.ODataClient;
+import com.msopentech.odatajclient.engine.client.ODataClientFactory;
 import com.msopentech.odatajclient.engine.communication.request.retrieve.ODataEntityRequest;
-import com.msopentech.odatajclient.engine.communication.request.retrieve.ODataRetrieveRequestFactory;
 import com.msopentech.odatajclient.engine.data.ODataEntity;
 import com.msopentech.odatajclient.engine.data.metadata.EdmMetadata;
 import com.msopentech.odatajclient.engine.format.ODataPubFormat;
-import com.msopentech.odatajclient.engine.uri.ODataURIBuilder;
-import com.msopentech.odatajclient.engine.utils.Configuration;
 import com.msopentech.odatajclient.proxy.api.EntityContainerFactory;
 import net.tirasa.odatajclientandroid.proxy.odatademo.DemoService;
 import net.tirasa.odatajclientandroid.proxy.odatademo.types.Product;
@@ -22,6 +21,8 @@ import net.tirasa.odatajclientandroid.proxy.odatademo.types.Product;
 public class Main extends Activity implements OnClickListener {
 
     private static final String SERVICE_ROOT = "http://services.odata.org/V3/OData/OData.svc";
+
+    private final ODataClient client = ODataClientFactory.getV3();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -110,7 +111,7 @@ public class Main extends Activity implements OnClickListener {
             text.append("[METADATA]").append('\n');
             // ------------------ Metadata ------------------
             try {
-                final EdmMetadata metadata = ODataRetrieveRequestFactory.getMetadataRequest(SERVICE_ROOT).
+                final EdmMetadata metadata = client.getRetrieveRequestFactory().getMetadataRequest(SERVICE_ROOT).
                         execute().getBody();
 
                 text.append("Schema namespace: ").append(metadata.getSchema(0).getNamespace()).append('\n');
@@ -122,8 +123,11 @@ public class Main extends Activity implements OnClickListener {
             // ------------------ JSON (Engine) ------------------
             text.append('\n').append("[JSON - Engine]").append('\n');
             try {
-                final ODataEntityRequest jsonReq = ODataRetrieveRequestFactory.getEntityRequest(new ODataURIBuilder(
-                        SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(0).build());
+                final ODataEntityRequest jsonReq = client.getRetrieveRequestFactory().getEntityRequest(
+                        client.getURIBuilder(SERVICE_ROOT).
+                        appendEntitySetSegment("Products").
+                        appendKeySegment(0).
+                        build());
 
                 final ODataEntity jsonProduct = jsonReq.execute().getBody();
 
@@ -136,8 +140,11 @@ public class Main extends Activity implements OnClickListener {
             // ------------------ ATOM (Engine) ------------------
             text.append('\n').append("[Atom - Engine]").append('\n');
             try {
-                final ODataEntityRequest atomReq = ODataRetrieveRequestFactory.getEntityRequest(new ODataURIBuilder(
-                        SERVICE_ROOT).appendEntitySetSegment("Products").appendKeySegment(1).build());
+                final ODataEntityRequest atomReq = client.getRetrieveRequestFactory().getEntityRequest(
+                        client.getURIBuilder(SERVICE_ROOT).
+                        appendEntitySetSegment("Products").
+                        appendKeySegment(1).
+                        build());
                 atomReq.setFormat(ODataPubFormat.ATOM);
                 final ODataEntity atomProduct = atomReq.execute().getBody();
 
@@ -147,11 +154,11 @@ public class Main extends Activity implements OnClickListener {
                 text.append(e.getLocalizedMessage()).append('\n');
             }
 
-
             // ------------------ JSON (Proxy) ------------------
             text.append('\n').append("[JSON - Proxy]").append('\n');
             try {
-                final EntityContainerFactory entityContainerFactory = EntityContainerFactory.getInstance(SERVICE_ROOT);
+                final EntityContainerFactory entityContainerFactory =
+                        EntityContainerFactory.getV3Instance(SERVICE_ROOT);
                 final DemoService service = entityContainerFactory.getEntityContainer(DemoService.class);
 
                 final Product product = service.getProducts().get(2);
@@ -166,9 +173,10 @@ public class Main extends Activity implements OnClickListener {
             // ------------------ Atom (Proxy) ------------------
             text.append('\n').append("[Atom - Proxy]").append('\n');
             try {
-                Configuration.setDefaultPubFormat(ODataPubFormat.ATOM);
+                client.getConfiguration().setDefaultPubFormat(ODataPubFormat.ATOM);
 
-                final EntityContainerFactory entityContainerFactory = EntityContainerFactory.getInstance(SERVICE_ROOT);
+                final EntityContainerFactory entityContainerFactory =
+                        EntityContainerFactory.getV3Instance(SERVICE_ROOT);
                 final DemoService service = entityContainerFactory.getEntityContainer(DemoService.class);
 
                 final Product product = service.getProducts().get(3);
@@ -181,7 +189,6 @@ public class Main extends Activity implements OnClickListener {
             }
 
             // ------------------
-
             return text.toString();
         }
 

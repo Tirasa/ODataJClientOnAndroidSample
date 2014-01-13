@@ -9,7 +9,7 @@
   <name>ODataJClientOnAndroid</name>
 
   <properties>
-    <odatajclient.version>0.9.0-SNAPSHOT</odatajclient.version>
+    <odatajclient.version>0.9.1-SNAPSHOT</odatajclient.version>
     <platform.version>4.1.1.4</platform.version>
     <android.plugin.version>3.7.0</android.plugin.version>
     
