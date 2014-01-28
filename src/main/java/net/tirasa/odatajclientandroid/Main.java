@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import com.msopentech.odatajclient.engine.client.ODataClient;
 import com.msopentech.odatajclient.engine.client.ODataClientFactory;
+import com.msopentech.odatajclient.engine.client.ODataV3Client;
 import com.msopentech.odatajclient.engine.communication.request.retrieve.ODataEntityRequest;
 import com.msopentech.odatajclient.engine.data.ODataEntity;
-import com.msopentech.odatajclient.engine.data.metadata.EdmMetadata;
+import com.msopentech.odatajclient.engine.data.metadata.EdmV3Metadata;
 import com.msopentech.odatajclient.engine.format.ODataPubFormat;
 import com.msopentech.odatajclient.proxy.api.EntityContainerFactory;
 import net.tirasa.odatajclientandroid.proxy.odatademo.DemoService;
@@ -22,7 +22,7 @@ public class Main extends Activity implements OnClickListener {
 
     private static final String SERVICE_ROOT = "http://services.odata.org/V3/OData/OData.svc";
 
-    private final ODataClient client = ODataClientFactory.getV3();
+    private final ODataV3Client client = ODataClientFactory.getV3();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -111,7 +111,7 @@ public class Main extends Activity implements OnClickListener {
             text.append("[METADATA]").append('\n');
             // ------------------ Metadata ------------------
             try {
-                final EdmMetadata metadata = client.getRetrieveRequestFactory().getMetadataRequest(SERVICE_ROOT).
+                final EdmV3Metadata metadata = client.getRetrieveRequestFactory().getMetadataRequest(SERVICE_ROOT).
                         execute().getBody();
 
                 text.append("Schema namespace: ").append(metadata.getSchema(0).getNamespace()).append('\n');
