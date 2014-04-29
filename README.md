@@ -1,4 +1,6 @@
-Sample Android application featuring [ODataJClient](https://github.com/MSOpenTech/ODataJClient)
+# IMPORTANT
+
+[ODataJClient](https://github.com/MSOpenTech/ODataJClient) source code was donated to [Apache Olingo](http://olingo.apache.org): an updated version of this sample Android application, that relies upon Apache Olingo, is [available](https://github.com/Tirasa/olingoClientOnAndroidSample).
 
 ### How to test
 
